@@ -14259,6 +14259,24 @@ a.anchor-link {
 
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Some data was collected prior writing this report. For example,
+<code>./data/sites_published</code> has the output <code>aws s3 ls</code> for the <code>publisherstore-us</code>
+bucket that contains archives of the published websites. In addition,
+<code>./data/sites_to_copy.csv</code> contains site ids that needs to be republished. At
+the moment, SQL query for them looks like that:</p>
+<div class="highlight"><pre><span></span><span class="k">select</span> <span class="k">distinct</span> <span class="n">sps</span><span class="p">.</span><span class="n">id</span>
+<span class="k">from</span> <span class="n">sites_publishedsite</span> <span class="n">sps</span>
+         <span class="k">join</span> <span class="p">(</span><span class="k">select</span> <span class="o">*</span>
+               <span class="k">from</span> <span class="n">sites_sitereplicant</span> <span class="n">outer_</span>
+               <span class="k">where</span> <span class="k">not</span> <span class="k">exists</span><span class="p">(</span><span class="k">select</span> <span class="mi">1</span>
+                                <span class="k">from</span> <span class="n">sites_sitereplicant</span> <span class="n">inner_</span>
+                                <span class="k">where</span> <span class="n">inner_</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">outer_</span><span class="p">.</span><span class="n">id</span>
+                                  <span class="k">and</span> <span class="n">inner_</span><span class="p">.</span><span class="n">store_id</span> <span class="k">in</span> <span class="o">%</span><span class="n">s</span><span class="p">))</span> <span class="n">ssr</span>
+              <span class="k">on</span> <span class="n">ssr</span><span class="p">.</span><span class="n">published_site_id</span> <span class="o">=</span> <span class="n">sps</span><span class="p">.</span><span class="n">id</span>
+        <span class="k">where</span> <span class="n">sps</span><span class="p">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">and</span> <span class="n">sps</span><span class="p">.</span><span class="k">state</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">and</span> <span class="n">date_published</span> <span class="o">&gt;=</span> <span class="nb">DATE</span> <span class="s1">&#39;2018-08-01&#39;</span>
+</pre></div>
 <p>Let's prepare our data. We will select ZIP files from the bucket.</p>
 
 </div>
